@@ -1,0 +1,44 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/scenes/game/player.gd" type="Script" id=1]
+
+[node name="player" type="KinematicBody2D"]
+
+input_pickable = false
+collision_layer = 1
+collision_mask = 1
+collision/safe_margin = 0.08
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+upper_bounds = 800.0
+lower_bounds = 400.0
+vert_move_speed = 1.0
+vert_max_velocity = 10.0
+horz_move_speed = 2.0
+horz_max_velocity = 10.0
+horz_dampening = 1.0
+
+[node name="ColorRect" type="ColorRect" parent="." index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 46.0
+margin_bottom = 80.0
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+color = Color( 0.0427246, 0.78125, 0, 1 )
+_sections_unfolded = [ "Anchor" ]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." index="1"]
+
+build_mode = 0
+polygon = PoolVector2Array( 0.282478, -0.108654, 0.0446472, 79.8012, 45.9452, 80.039, 45.9452, 0.129169 )
+
+

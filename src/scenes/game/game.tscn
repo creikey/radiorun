@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/scenes/game/player.tscn" type="PackedScene" id=1]
+
+[node name="game" type="Node2D" index="0"]
+
+[node name="player" parent="." index="0" instance=ExtResource( 1 )]
+
+position = Vector2( 258.471, 451.644 )
+upper_bounds = 800.0
+lower_bounds = 400.0
+
+
