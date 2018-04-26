@@ -1,6 +1,8 @@
-extends KinematicBody2D
+extends Area2D
 
-enum STATES { flying, flipping, falling, rising, reorienting }
+signal death
+
+enum STATES { flying, flipping, falling, rising, reorienting, dead }
 var state
 
 export var upper_bounds = 0.5
@@ -28,11 +30,11 @@ func _process(delta):
 			$AnimatedSprite.play("flipping")
 			state = STATES.flipping
 		flying_counter += 1
-		move_and_collide(Vector2(0,sin(flying_counter/flying_divisor)*flying_variation))
+		relative_move(Vector2(0,sin(flying_counter/flying_divisor)*flying_variation))
 		if(Input.is_action_pressed("game_left")):
-			move_and_collide(Vector2(-flying_horizontal_speed,0))
+			relative_move(Vector2(-flying_horizontal_speed,0))
 		if(Input.is_action_pressed("game_right")):
-			move_and_collide(Vector2(flying_horizontal_speed,0))
+			relative_move(Vector2(flying_horizontal_speed,0))
 		var sprite_width = $AnimatedSprite.frames.get_frame("flying", $AnimatedSprite.frame).get_width()
 		sprite_width *= $AnimatedSprite.scale.x
 		global_position.x = clamp(global_position.x, 0, OS.get_window_size().x-sprite_width)
@@ -47,8 +49,16 @@ func _process(delta):
 		if(Input.is_action_pressed("game_up")):
 			$AnimatedSprite.play("reorienting")
 			state = STATES.reorienting
+		# Emit death if the player goes off screen
+		if(global_position.y > OS.get_window_size().y):
+			emit_signal("death")
+			state = STATES.dead
 		falling_velocity += fall_speed
-		move_and_collide(Vector2(0,falling_velocity))
+		relative_move(Vector2(0,falling_velocity))
+		if(Input.is_action_pressed("game_left")):
+			relative_move(Vector2(-flying_horizontal_speed,0))
+		if(Input.is_action_pressed("game_right")):
+			relative_move(Vector2(flying_horizontal_speed,0))
 	elif(state == STATES.reorienting):
 		# Transition to going up
 		if($AnimatedSprite.frame >= $AnimatedSprite.frames.get_frame_count("reorienting")-1):
@@ -60,8 +70,13 @@ func _process(delta):
 		if(global_position.y <= OS.get_window_size().y*upper_bounds):
 			state=STATES.flying
 		rising_velocity += rise_speed
-		move_and_collide(Vector2(0,-rising_velocity))
+		relative_move(Vector2(0,-rising_velocity))
+	elif(state == STATES.dead):
+		pass
 
 func goto_upper_bounds():
 	var target_pos = Vector2(OS.get_window_size().x/2, upper_bounds*OS.get_window_size().y)
-	move_and_collide(target_pos-global_position)
+	relative_move(target_pos-global_position)
+
+func relative_move(inVec):
+	global_position += inVec

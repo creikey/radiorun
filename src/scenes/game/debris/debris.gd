@@ -1,10 +1,10 @@
-extends Area2D
+extends RigidBody2D
 
 var rock_numb = 0
-var rot_speed = 2.0
+export var max_rock_numb = 5
 
 func _ready():
-	set_process(true)
+	set_rock_numb(rock_numb)
 
 func set_rock_numb(new_numb):
 	rock_numb = new_numb
