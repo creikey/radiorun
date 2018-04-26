@@ -10,7 +10,7 @@ source_file="res://src/scenes/game/player-animations/flip/10.png"
 source_md5="60eab184f42463aab010060ea0e0a36c"
 
 dest_files=[ "res://.import/10.png-71c6931d15c36dfc900772750cc59124.stex" ]
-dest_md5="c511c47b1d1dd7a34926392c67c7f485"
+dest_md5="025a2171f90c7a24c057f8ddaed17b3f"
 
 [params]
 
@@ -19,7 +19,7 @@ compress/lossy_quality=0.7
 compress/hdr_mode=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=true
+flags/filter=false
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2

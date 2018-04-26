@@ -1,67 +1,67 @@
 extends KinematicBody2D
 
-export var upper_bounds = 800.0
-export var lower_bounds = 400.0
-export var vert_move_speed = 3.0
-export var vert_max_velocity = 8.0
-export var horz_move_speed = 1.0
-export var horz_max_velocity = 5.0
-export var horz_dampening = 0.5
-export var float_delta = 0.0
-export (NodePath) var bg_node_path
-export (NodePath) var animation_player
+enum STATES { flying, flipping, falling, rising, reorienting }
+var state
 
-enum direction { UP, DOWN, LEFT, RIGHT, STATIONARY }
-var curverdir = direction.UP
-var curhorzdir = direction.STATIONARY
-var velocity = Vector2()
-var bounce_counter = 0
-onready var bg_node = get_node(bg_node_path)
-onready var anim_node = get_node(animation_player)
+export var upper_bounds = 0.5
+export (NodePath) var bg_sprite
+export var flying_variation = 30
+export var flying_divisor = 8
+export var flying_horizontal_speed = 5.0
+export var fall_speed = 0.2
+export var rise_speed = 0.5
 
+var falling_velocity = 0
+var rising_velocity = 0
+var flying_counter = 0
 
 func _ready():
-	set_physics_process(true)
+	state = STATES.flying
+	$AnimatedSprite.set_animation("flying")
+	goto_upper_bounds()
 	set_process(true)
 
 func _process(delta):
-	if(Input.is_action_pressed("game_left")):
-		curhorzdir = direction.LEFT
-	elif(Input.is_action_pressed("game_right")):
-		curhorzdir = direction.RIGHT
-	else:
-		curhorzdir = direction.STATIONARY
-	if(Input.is_action_just_pressed("game_up")):
-		curverdir = flip_horz_dir(curverdir)
+	if(state == STATES.flying):
+		# Transition to flipping if press up
+		if(Input.is_action_pressed("game_up")):
+			$AnimatedSprite.play("flipping")
+			state = STATES.flipping
+		flying_counter += 1
+		move_and_collide(Vector2(0,sin(flying_counter/flying_divisor)*flying_variation))
+		if(Input.is_action_pressed("game_left")):
+			move_and_collide(Vector2(-flying_horizontal_speed,0))
+		if(Input.is_action_pressed("game_right")):
+			move_and_collide(Vector2(flying_horizontal_speed,0))
+		var sprite_width = $AnimatedSprite.frames.get_frame("flying", $AnimatedSprite.frame).get_width()
+		sprite_width *= $AnimatedSprite.scale.x
+		global_position.x = clamp(global_position.x, 0, OS.get_window_size().x-sprite_width)
+	elif(state == STATES.flipping):
+		# Transition to falling if done flipping
+		if($AnimatedSprite.frame >= $AnimatedSprite.frames.get_frame_count("flipping")-1):
+			$AnimatedSprite.play("falling")
+			falling_velocity = 0
+			state = STATES.falling
+	elif(state == STATES.falling):
+		# Transition if trying to reorient
+		if(Input.is_action_pressed("game_up")):
+			$AnimatedSprite.play("reorienting")
+			state = STATES.reorienting
+		falling_velocity += fall_speed
+		move_and_collide(Vector2(0,falling_velocity))
+	elif(state == STATES.reorienting):
+		# Transition to going up
+		if($AnimatedSprite.frame >= $AnimatedSprite.frames.get_frame_count("reorienting")-1):
+			state = STATES.rising
+			rising_velocity = 0
+			$AnimatedSprite.play("flying")
+	elif(state == STATES.rising):
+		# Continue going up until it's at the peak
+		if(global_position.y <= OS.get_window_size().y*upper_bounds):
+			state=STATES.flying
+		rising_velocity += rise_speed
+		move_and_collide(Vector2(0,-rising_velocity))
 
-func _physics_process(delta):
-	if(curhorzdir == direction.STATIONARY):
-		velocity.x = 0
-	elif(curhorzdir == direction.LEFT):
-		velocity.x -= horz_move_speed
-	elif(curhorzdir == direction.RIGHT):
-		velocity.x += horz_move_speed
-	velocity.x = clamp( velocity.x, -horz_max_velocity, horz_max_velocity )
-	if(velocity.x != 0):
-		velocity.x += (velocity.x/abs(velocity.x))*horz_dampening*-1
-	if(curverdir == direction.UP):
-		velocity.y -= vert_move_speed
-	elif(curverdir == direction.DOWN):
-		velocity.y += vert_move_speed
-	velocity.y = clamp( velocity.y, -vert_max_velocity, vert_max_velocity )
-	move_and_collide(velocity)
-	if(velocity.y > 0):
-		bg_node.down_delta = velocity.y*2*-1
-	else:
-		bg_node.down_delta = bg_node.original_down_delta
-		
-	global_position.y = clamp( global_position.y, lower_bounds, upper_bounds )
-	bounce_counter += 1
-	if( global_position.y <= lower_bounds ):
-		move_and_collide(Vector2(0,float_delta))
-
-func flip_horz_dir(in_dir):
-	if(in_dir == direction.UP):
-		return direction.DOWN
-	else:
-		return direction.UP
+func goto_upper_bounds():
+	var target_pos = Vector2(OS.get_window_size().x/2, upper_bounds*OS.get_window_size().y)
+	move_and_collide(target_pos-global_position)
