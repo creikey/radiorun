@@ -1,6 +1,30 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://src/scenes/game/player.gd" type="Script" id=1]
+[ext_resource path="res://src/scenes/game/player-animations/jump/5.png" type="Texture" id=2]
+[ext_resource path="res://src/scenes/game/player-animations/jump/6.png" type="Texture" id=3]
+[ext_resource path="res://src/scenes/game/player-animations/jump/7.png" type="Texture" id=4]
+[ext_resource path="res://src/scenes/game/player-animations/jump/8.png" type="Texture" id=5]
+[ext_resource path="res://src/scenes/game/player-animations/jump/9.png" type="Texture" id=6]
+[ext_resource path="res://src/scenes/game/player-animations/jump/10.png" type="Texture" id=7]
+[ext_resource path="res://src/scenes/game/player-animations/jump/11.png" type="Texture" id=8]
+[ext_resource path="res://src/scenes/game/player-animations/jump/12.png" type="Texture" id=9]
+[ext_resource path="res://src/scenes/game/player-animations/jump/13.png" type="Texture" id=10]
+[ext_resource path="res://src/scenes/game/player-animations/idle/flying.png" type="Texture" id=11]
+
+[sub_resource type="SpriteFrames" id=1]
+
+animations = [ {
+"frames": [ ExtResource( 2 ), ExtResource( 3 ), ExtResource( 4 ), ExtResource( 5 ), ExtResource( 6 ), ExtResource( 7 ), ExtResource( 8 ), ExtResource( 9 ), ExtResource( 10 ) ],
+"loop": true,
+"name": "jump",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 11 ) ],
+"loop": true,
+"name": "flying",
+"speed": 5.0
+} ]
 
 [node name="player" type="KinematicBody2D"]
 
@@ -20,25 +44,17 @@ float_delta = 0.0
 bg_node_path = null
 animation_player = null
 
-[node name="ColorRect" type="ColorRect" parent="." index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_right = 90.0
-margin_bottom = 148.0
-rect_pivot_offset = Vector2( 0, 0 )
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-color = Color( 0.0427246, 0.78125, 0, 1 )
-_sections_unfolded = [ "Anchor" ]
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." index="1"]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." index="0"]
 
 build_mode = 0
-polygon = PoolVector2Array( 0.282478, -0.108654, 0.665771, 149.578, 89.5641, 149.578, 90.2275, 0.308548 )
+polygon = PoolVector2Array( 0.282478, -0.108654, 0.648605, 132.238, 90.2674, 134.503, 90.2275, 0.308548 )
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="." index="1"]
+
+scale = Vector2( 4.769, 4.769 )
+frames = SubResource( 1 )
+animation = "flying"
+centered = false
+_sections_unfolded = [ "Transform" ]
 
 
