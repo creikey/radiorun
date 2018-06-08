@@ -22,3 +22,9 @@ func on_window_resize():
 		set_region_rect(Rect2(Vector2(), Vector2(ProjectSettings.get_setting("display/window/size/width"), ProjectSettings.get_setting("display/window/size/height"))))
 	else:
 		set_region_rect(Rect2(Vector2(), OS.get_window_size()))
+
+func stop_scrolling():
+	set_process(false)
+
+func start_scrolling():
+	set_process(true)

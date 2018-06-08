@@ -9,3 +9,7 @@ func _ready():
 func set_rock_numb(new_numb):
 	rock_numb = new_numb
 	$sprite.texture = load("res://src/scenes/game/debris/" + str(rock_numb) + ".png")
+
+func _on_VisibilityNotifier2D_screen_exited():
+	#print("Destroying...")
+	queue_free()

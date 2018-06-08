@@ -80,3 +80,12 @@ func goto_upper_bounds():
 
 func relative_move(inVec):
 	global_position += inVec
+
+func _on_player_death():
+	print("dead")
+
+
+func _on_player_body_entered( body ):
+	if(body.is_in_group("debris")):
+		emit_signal("death")
+		state = STATES.dead
